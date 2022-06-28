@@ -1,0 +1,77 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterSupplyChain
+metadata:
+  name: scanning-image-scan-to-url
+spec:
+  params:
+  - default: main
+    name: gitops_branch
+  - default: supplychain
+    name: gitops_user_name
+  - default: supplychain
+    name: gitops_user_email
+  - default: supplychain@cluster.local
+    name: gitops_commit_message
+  - default: ''
+    name: gitops_ssh_secret
+  resources:
+  - name: deliverable
+    params:
+    - name: registry
+      value:
+        repository: tap-wkld
+        server: harbor.emea.end2end.link
+    templateRef:
+      kind: ClusterTemplate
+      name: deliverable-template
+  - name: image-provider
+    params:
+    - name: serviceAccount
+      value: default
+    templateRef:
+      kind: ClusterImageTemplate
+      name: image-provider-template
+  - images:
+    - name: image
+      resource: image-provider
+    name: image-scanner
+    templateRef:
+      kind: ClusterImageTemplate
+      name: image-scanner-template
+  - images:
+    - name: image
+      resource: image-scanner
+    name: config-provider
+    params:
+    - name: serviceAccount
+      value: default
+    templateRef:
+      kind: ClusterConfigTemplate
+      name: convention-template
+  - configs:
+    - name: config
+      resource: config-provider
+    name: app-config
+    templateRef:
+      kind: ClusterConfigTemplate
+      name: config-template
+  - configs:
+    - name: config
+      resource: app-config
+    name: config-writer
+    params:
+    - name: serviceAccount
+      value: default
+    - name: registry
+      value:
+        repository: tap-wkld
+        server: harbor.emea.end2end.link
+    templateRef:
+      kind: ClusterTemplate
+      name: config-writer-template
+  selector:
+    apps.tanzu.vmware.com/workload-type: web
+  selectorMatchFields:
+  - key: spec.image
+    operator: Exists
+

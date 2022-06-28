@@ -1,0 +1,8 @@
+apiVersion: carto.run/v1alpha1
+kind: Deliverable
+metadata:
+  name: ootb-sc-demo
+spec:
+  source:
+    image: harbor.emea.end2end.link/tap-wkld/ootb-sc-demo-prod-w04-s061-bundle:c5373f77-f416-4beb-a0d5-f8c8283d81d5
+

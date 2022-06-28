@@ -1,0 +1,21 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterSourceTemplate
+metadata:
+  name: source-sctk-template
+spec:
+  revisionPath: ".status.outputs.revision"
+  template:
+    apiVersion: carto.run/v1alpha1
+    kind: Runnable
+    metadata:
+      name: "$(workload.metadata.name)$-api-compliance-test"
+    spec:
+      inputs:
+        source-revision: "$(sources.source.revision)$"
+        source-url: "$(sources.source.url)$"
+      runTemplateRef:
+        kind: ClusterRunTemplate
+        name: run-sctk-template
+      serviceAccountName: "$(workload.spec.serviceAccountName)$"
+  urlPath: ".status.outputs.url"
+
